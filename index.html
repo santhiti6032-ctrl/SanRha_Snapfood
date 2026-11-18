@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFB88A">
+  <title>SanRha_Snapfood</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍊</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">🍊</span>
+        <div>
+          <h1>SanRha_Snapfood</h1>
+          <p id="todayLabel">วันนี้</p>
+        </div>
+      </div>
+      <button class="icon-btn" data-go="settings" aria-label="ตั้งค่า">
+        <svg viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+      </button>
+    </header>
+
+    <main>
+      <!-- ===== TODAY ===== -->
+      <section id="view-today" class="view active">
+        <div class="hero">
+          <div class="hero-text">
+            <p class="eyebrow" id="greetEyebrow">สวัสดีตอนเช้า ☀️</p>
+            <h2 id="statusTitle">วันนี้กินอะไรไปบ้าง?</h2>
+            <p class="status" id="statusMsg"></p>
+          </div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 120 120" class="ring" aria-hidden="true">
+              <circle class="ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="ring-center">
+              <strong id="eatenNum">0</strong>
+              <span>/ <b id="tdeeNum">0</b> kcal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><span>เหลือกินได้</span><strong id="remainNum">0</strong><small>kcal</small></div>
+          <div class="stat"><span>ของ TDEE</span><strong id="pctNum">0</strong><small>%</small></div>
+          <div class="stat"><span>บันทึกแล้ว</span><strong id="mealCount">0</strong><small>มื้อ</small></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Macros วันนี้</h3><span class="tag">เป้าจาก TDEE</span></div>
+          <div id="macros" class="macros"></div>
+        </div>
+
+        <div class="section-head">
+          <h3>กินอะไรไปบ้าง 🍽️</h3>
+          <button class="chip-btn" data-action="manual">+ เพิ่มเอง</button>
+        </div>
+        <ul id="todayList" class="meal-list"></ul>
+      </section>
+
+      <!-- ===== HISTORY ===== -->
+      <section id="view-history" class="view">
+        <div class="page-title">
+          <h2>ย้อนดู 7 วัน 📊</h2>
+          <p>แท่งแต่ละวันเทียบกับเส้น TDEE ของคุณ</p>
+        </div>
+        <div class="card chart-card">
+          <div id="weekChart"></div>
+          <div class="legend">
+            <span><i class="dot under"></i>ยังไม่ถึง</span>
+            <span><i class="dot near"></i>ใกล้ TDEE ±10%</span>
+            <span><i class="dot over"></i>เกิน</span>
+          </div>
+        </div>
+        <div class="stat-row" id="weekStats"></div>
+        <div id="historyList"></div>
+      </section>
+
+      <!-- ===== SETTINGS ===== -->
+      <section id="view-settings" class="view">
+        <div class="page-title">
+          <h2>ตั้งค่า ⚙️</h2>
+          <p>ข้อมูลทั้งหมดเก็บอยู่ในเครื่องนี้เท่านั้น</p>
+        </div>
+
+        <div class="card tdee-card">
+          <div class="tdee-big">
+            <span>TDEE ของคุณ</span>
+            <strong id="setTdee">0</strong>
+            <small>kcal / วัน</small>
+          </div>
+          <div class="tdee-mini">
+            <div><span>BMR</span><b id="setBmr">0</b></div>
+            <div><span>BMI</span><b id="setBmi">0</b></div>
+          </div>
+        </div>
+
+        <form class="card form" id="profileForm">
+          <div class="card-head"><h3>โปรไฟล์</h3><span class="tag">จำเป็น: น้ำหนัก + ส่วนสูง</span></div>
+          <div class="grid2">
+            <label>น้ำหนัก (kg)<input type="number" name="weight" step="0.1" min="20" max="300" inputmode="decimal" required></label>
+            <label>ส่วนสูง (cm)<input type="number" name="height" step="0.1" min="100" max="250" inputmode="decimal" required></label>
+          </div>
+          <details class="more">
+            <summary>ปรับให้แม่นขึ้น (อายุ · เพศ · กิจกรรม)</summary>
+            <div class="grid2">
+              <label>อายุ (ปี)<input type="number" name="age" min="10" max="100" inputmode="numeric"></label>
+              <div class="field">
+                <span class="field-label">เพศ</span>
+                <div class="segmented">
+                  <label><input type="radio" name="sex" value="male"><span>ชาย</span></label>
+                  <label><input type="radio" name="sex" value="female"><span>หญิง</span></label>
+                </div>
+              </div>
+            </div>
+            <label>ระดับกิจกรรม<select name="activity" id="activitySelect"></select></label>
+          </details>
+          <button type="submit" class="btn-primary">บันทึกโปรไฟล์</button>
+        </form>
+
+        <div class="card explain">
+          <div class="card-head"><h3>TDEE คำนวณยังไง? 🤓</h3></div>
+          <p><b>TDEE</b> (Total Daily Energy Expenditure) = พลังงานที่ร่างกายใช้ทั้งวัน ถ้ากินเท่านี้น้ำหนักจะคงที่ กินน้อยกว่า = ลด กินมากกว่า = เพิ่ม</p>
+          <ol>
+            <li><b>หา BMR</b> (พลังงานตอนนอนเฉยๆ) ด้วยสูตร Mifflin-St Jeor
+              <code>ชาย: 10×น้ำหนัก + 6.25×ส่วนสูง − 5×อายุ + 5</code>
+              <code>หญิง: 10×น้ำหนัก + 6.25×ส่วนสูง − 5×อายุ − 161</code>
+            </li>
+            <li><b>คูณระดับกิจกรรม</b>
+              <code>TDEE = BMR × ตัวคูณกิจกรรม</code>
+            </li>
+          </ol>
+          <div class="calc-steps" id="calcSteps"></div>
+          <table class="act-table" id="actTable"></table>
+        </div>
+
+        <form class="card form" id="apiForm">
+          <div class="card-head"><h3>ChatGPT API 🤖</h3><span class="tag" id="keyStatus">ยังไม่ได้ใส่</span></div>
+          <label>OpenAI API Key
+            <div class="input-row">
+              <input type="password" name="apiKey" id="apiKeyInput" placeholder="sk-..." autocomplete="off" spellcheck="false">
+              <button type="button" class="ghost-btn" id="toggleKey">แสดง</button>
+            </div>
+          </label>
+          <label>โมเดล
+            <input type="text" name="model" list="modelList" placeholder="gpt-4o-mini" spellcheck="false">
+            <datalist id="modelList">
+              <option value="gpt-4o-mini">ถูก เร็ว (แนะนำ)</option>
+              <option value="gpt-4o">แม่นขึ้น</option>
+              <option value="gpt-4.1-mini"></option>
+              <option value="gpt-4.1"></option>
+            </datalist>
+          </label>
+          <p class="note" id="keyNote">🔒 Key เก็บใน localStorage ของเบราว์เซอร์นี้ และส่งตรงไปที่ api.openai.com เท่านั้น — อย่าแชร์ไฟล์/เว็บนี้พร้อม key ให้คนอื่นใช้</p>
+          <button type="submit" class="btn-primary">บันทึก API</button>
+        </form>
+
+        <div class="card danger">
+          <div class="card-head"><h3>จัดการข้อมูล</h3></div>
+          <div class="btn-row">
+            <button class="ghost-btn" id="btnClearMeals">ลบประวัติอาหาร</button>
+            <button class="ghost-btn red" id="btnReset">รีเซ็ตแอปทั้งหมด</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-go="today">
+      <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>วันนี้</span>
+    </button>
+    <button class="nav-btn" data-go="history">
+      <svg viewBox="0 0 24 24"><path d="M5 20V12M12 20V5M19 20v-9M3 20h18"/></svg>
+      <span>ประวัติ</span>
+    </button>
+    <button class="fab" data-action="snap" aria-label="ถ่ายรูปอาหาร">
+      <svg viewBox="0 0 24 24"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.6-2h6.2l1.6 2h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="4"/></svg>
+    </button>
+    <button class="nav-btn" data-action="manual">
+      <svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg>
+      <span>เพิ่มเอง</span>
+    </button>
+    <button class="nav-btn" data-go="settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      <span>โปรไฟล์</span>
+    </button>
+  </nav>
+
+  <input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
+
+  <!-- Bottom sheet (analyze / manual add) -->
+  <div class="sheet-backdrop" id="sheet" hidden>
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-handle"></div>
+      <div id="sheetBody"></div>
+    </div>
+  </div>
+
+  <!-- Onboarding -->
+  <div class="onboard" id="onboard" hidden>
+    <div class="onboard-card">
+      <div class="big-emoji">🍊</div>
+      <h2>หวัดดี! มาเริ่มกันเลย</h2>
+      <p>กรอกแค่ <b>น้ำหนัก</b> กับ <b>ส่วนสูง</b> เดี๋ยวเราคำนวณ TDEE ให้เอง</p>
+      <form id="onboardForm" class="form">
+        <div class="grid2">
+          <label>น้ำหนัก (kg)<input type="number" name="weight" step="0.1" min="20" max="300" inputmode="decimal" placeholder="60" required></label>
+          <label>ส่วนสูง (cm)<input type="number" name="height" step="0.1" min="100" max="250" inputmode="decimal" placeholder="165" required></label>
+        </div>
+        <button type="submit" class="btn-primary">คำนวณ TDEE ✨</button>
+      </form>
+      <p class="hint">ค่าเริ่มต้น: อายุ 25 ปี · ชาย · ออกกำลังเบา — แก้ได้ทีหลังในหน้าโปรไฟล์</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js" onerror="window.FOODSNAP_CONFIG = {}"></script>
+  <script src="app.js"></script>
+</body>
+</html>
